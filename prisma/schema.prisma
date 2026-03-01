@@ -1,0 +1,59 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+model User {
+  id          String       @id @default(cuid())
+  name        String?
+  email       String       @unique
+  role        Role         @default(STUDENT)
+  courses     Course[]     @relation("TeacherCourses")
+  attendances Attendance[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Course {
+  id        String    @id @default(cuid())
+  title     String
+  teacher   User      @relation("TeacherCourses", fields: [teacherId], references: [id])
+  teacherId String
+  sessions  Session[]
+}
+
+model Session {
+  id            String       @id @default(cuid())
+  course        Course       @relation(fields: [courseId], references: [id])
+  courseId      String
+  zoomMeetingId String       @unique
+  startTime     DateTime
+  endTime       DateTime?
+  attendances   Attendance[]
+}
+
+model Attendance {
+  id                    String   @id @default(cuid())
+  session               Session  @relation(fields: [sessionId], references: [id])
+  sessionId             String
+  student               User     @relation(fields: [studentId], references: [id])
+  studentId             String
+  joinTime              DateTime @default(now())
+  leaveTime             DateTime?
+  totalDurationMinutes  Int?
+
+  @@index([sessionId, studentId])
+}
