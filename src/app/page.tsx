@@ -104,7 +104,7 @@ export default function LandingPage() {
             <Link href="#" className="hover:text-blue-600 transition-colors">Informasi</Link>
             <Link href="#" className="hover:text-blue-600 transition-colors">Kontak</Link>
             <Button className="bg-blue-700 hover:bg-blue-800 rounded-full px-6 shadow-lg shadow-blue-200" asChild>
-              <Link href="/dashboard">Login Portal</Link>
+              <Link href="/login">Login Portal</Link>
             </Button>
           </div>
         </div>
