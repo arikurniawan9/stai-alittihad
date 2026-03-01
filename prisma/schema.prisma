@@ -12,19 +12,30 @@ datasource db {
 
 enum Role {
   ADMIN
+  OPERATOR
   TEACHER
   STUDENT
 }
 
 model User {
-  id          String       @id @default(cuid())
-  name        String?
-  email       String       @unique
-  role        Role         @default(STUDENT)
-  courses     Course[]     @relation("TeacherCourses")
-  attendances Attendance[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id            String       @id @default(cuid())
+  name          String?
+  username      String       @unique
+  email         String       @unique
+  password      String
+  role          Role         @default(STUDENT)
+  image         String?
+  lastSeen      DateTime     @default(now())
+  isOnline      Boolean      @default(false)
+  
+  // Relations
+  courses       Course[]     @relation("TeacherCourses")
+  attendances   Attendance[]
+  
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([role])
 }
 
 model Course {
@@ -39,7 +50,7 @@ model Session {
   id            String       @id @default(cuid())
   course        Course       @relation(fields: [courseId], references: [id])
   courseId      String
-  zoomMeetingId String       @unique
+  jitsiRoomId   String       @unique
   startTime     DateTime
   endTime       DateTime?
   attendances   Attendance[]
@@ -56,4 +67,10 @@ model Attendance {
   totalDurationMinutes  Int?
 
   @@index([sessionId, studentId])
+}
+
+model SystemConfig {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
 }
